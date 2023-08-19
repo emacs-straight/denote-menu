@@ -92,13 +92,17 @@ denote file corresponding to the button."
 (defun denote-menu-list-notes ()
   "Display list of Denote files in variable `denote-directory'."
   (interactive)
-  (let ((buffer (get-buffer-create "*Denote*")))
-    (with-current-buffer buffer
-      (setq buffer-file-coding-system 'utf-8)
-      (setq denote-menu-current-regex denote-menu-initial-regex)
-      (denote-menu-mode))
+  ;; kill any existing *Denote* buffer
+  (let ((denote-menu-buffer-name (format "*Denote %s*" denote-directory)))
+    (when (get-buffer  denote-menu-buffer-name)
+      (kill-buffer denote-menu-buffer-name))
+    (let ((buffer (get-buffer-create denote-menu-buffer-name)))
+      (with-current-buffer buffer
+        (setq buffer-file-coding-system 'utf-8)
+        (setq denote-menu-current-regex denote-menu-initial-regex)
+        (denote-menu-mode))
     
-    (pop-to-buffer-same-window buffer)))
+      (pop-to-buffer-same-window buffer))))
 
 (defalias 'list-denotes 'denote-menu-list-notes
   "Alias of `denote-menu-list-notes' command.")
